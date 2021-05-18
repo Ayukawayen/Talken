@@ -54,7 +54,7 @@ async function signAndSendMessage(msg) {
 async function requestGp() {
 	let feeUtxo = await getFeeUtxo(g.account.deposit.addr, 11111);
 	if(!feeUtxo) {
-		alert(`Something Error!\nSend at least 0.0003 BCH to your deposit address [${g.account.deposit.addr}]`);
+		prompt(`Something Error!\nSend at least 0.0003 BCH to your deposit address`, g.account.deposit.addr);
 		return;
 	}
 	let gpUtxo = await getGpUtxo(MinterAddr, true);
@@ -76,7 +76,7 @@ async function requestGp() {
 async function postTalken(text) {
 	let feeUtxo = await getFeeUtxo(g.account.deposit.addr, 1200);
 	if(!feeUtxo) {
-		alert(`Something Error!\nSend at least 0.00002 BCH to your deposit address [${g.account.deposit.addr}]`);
+		prompt(`Something Error!\nSend at least 0.00002 BCH to your deposit address`, g.account.deposit.addr);
 		return;
 	}
 	let gpUtxo = await getGpUtxo(g.account.genesiser.addr);

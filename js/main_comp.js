@@ -22,9 +22,9 @@ Vue.component('v_main', {
 	},
 	filters: {
 		postButtonText: function(value) {
-			if(value == 'Loading') return '…';
+			if(value == 'Loading') return '……';
 			if(value > 0) return `Post [${value}]`;
-			if(value <= 0) return 'Get some TalkenG to post';
+			if(value <= 0) return 'Post [0]\nGet some TalkenG';
 			
 			return '';
 		},
