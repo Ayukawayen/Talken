@@ -14,6 +14,7 @@ let g = {
 		receiver: { addr:'' },
 	},
 	talkens:[],
+	talkenIdExists:{},
 };
 
 jsbtc.asyncInit().then(()=>{
@@ -151,39 +152,11 @@ function loadBalance() {
 }
 
 async function loadTalkens() {
-	/*
-	let mock = [
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: '這是第一篇中文Talken', },
-		{ name: 'You can post a Talken contains up to 179bytes on http://bch.gg/3dajl', },
-		{ name: 'This is the first Talken on BitcoinCash', },
-	];
-	for(let i=0;i<mock.length;++i) {
-		g.talkens.push(mock[i]);
-	}
-	*/
 	let talkens = await listTalkens(0);
 	for(let i=0;i<talkens.length;++i) {
+		if(g.talkenIdExists[talkens[i].id]) continue;
+		
+		g.talkenIdExists[talkens[i].id] = true;
 		g.talkens.push(talkens[i]);
 	}
 }
