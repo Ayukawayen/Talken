@@ -153,10 +153,10 @@ function loadBalance() {
 
 async function loadTalkens() {
 	let talkens = await listTalkens(0);
-	for(let i=0;i<talkens.length;++i) {
+	for(let i=talkens.length-1;i>=0;--i) {
 		if(g.talkenIdExists[talkens[i].id]) continue;
 		
 		g.talkenIdExists[talkens[i].id] = true;
-		g.talkens.push(talkens[i]);
+		g.talkens.unshift(talkens[i]);
 	}
 }
