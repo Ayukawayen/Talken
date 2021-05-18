@@ -1,0 +1,25 @@
+<!doctype html>
+	<head> 
+		<title>Talken</title> 
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+	</head>
+	<body>
+		<div id="app">
+			<v_header :account="account"></v_header>
+			<v_main :account="account" :talkens="talkens"></v_main>
+		</div>
+	</body>
+	
+	<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+	<script src="js/lib/jsbtc.web.min.js"></script>
+	<script src="js/lib/bchaddrjs.min.js"></script>
+	<script src="js/lib/cashaddrjs.js"></script>
+	<script src="js/lib/elliptic.min.js"></script>
+	<script src="js/bch.js"></script>
+	<script src="js/list_talken_comp.js"></script>
+	<script src="js/header_comp.js"></script>
+	<script src="js/main_comp.js"></script>
+	<script src="js/list_talken_main.js"></script>
+</html>
