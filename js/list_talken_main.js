@@ -58,16 +58,20 @@ async function requestGp() {
 		prompt(`Something Error!\nSend at least 0.0003 BCH to your deposit address`, g.account.deposit.addr);
 		return;
 	}
-	let gpUtxo = await getGpUtxos(MinterAddr, true);
-	if(!gpUtxo) {
+	let gpUtxos = await getGpUtxos(MinterAddr, true);
+	if(!gpUtxos || gpUtxos.length <= 0) {
 		alert('Something Error!');
 		return;
 	}
 	
+	let index = g.account.deposit.pubkey.substr(2,8);
+	index = parseInt(index, 16);
+	index %= gpUtxos.length;
+	
 	let msg = {
 		userPubkey: g.account.user.pubkey,
 		feeUtxo: feeUtxo,
-		gpUtxo: gpUtxo,
+		gpUtxo: gpUtxos[index],
 		genesiserAddr: g.account.genesiser.addr,
 	};
 	
@@ -129,6 +133,9 @@ function loadAccount() {
 	let keypair = ec.keyFromPublic(g.account.server.pubkey, 'hex');
 	let point = keypair.getPublic().mul(g.account.user.prikey);
 	g.account.deposit.prikey = point.getX().toString(16);
+	if(g.account.deposit.prikey.length < 64) {
+		g.account.deposit.prikey = '0'.repeat(64-g.account.deposit.prikey.length) + g.account.deposit.prikey;
+	}
 	g.account.deposit.wif = jsbtc.privateKeyToWif(g.account.deposit.prikey);
 	g.account.deposit.pubkey = jsbtc.privateToPublicKey(g.account.deposit.prikey);
 	g.account.deposit.addr = bchaddr.toCashAddress(jsbtc.publicKeyToAddress(g.account.deposit.pubkey, {witnessVersion: null}));
@@ -151,7 +158,7 @@ function loadBalance() {
 	g.account.genesiser.gpBalance = 'Loading';
 	
 	getGpUtxos(g.account.genesiser.addr).then((response)=>{
-		gpUtxos = response;
+		gpUtxos = response || [];
 		g.account.genesiser.gpBalance = gpUtxos.length;
 	});
 }
