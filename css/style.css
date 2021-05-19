@@ -54,9 +54,9 @@ header .prikey {
 	position: fixed;
 
     top: 5rem;
-    left: 0;
-    right: 0;
     bottom: 0;
+    right: 0;
+	min-width: 100%;
 	
 	padding:5rem 0 0;
 	
@@ -101,9 +101,9 @@ header .prikey .form >label {
 header .prikey .form >input {
 	display: block;
 	
-	width: 25rem;
-	height: 2.5rem;
-	padding: 0.5rem;
+	width: 25em;
+	height: 2.5em;
+	padding: 0.5em;
 	
 	font-family: monospace;
 	
@@ -112,6 +112,12 @@ header .prikey .form >input {
 	background-color:#fff;
 	color:#000;
 }
+@media only screen and (max-width: 480px) {
+	header .prikey .form >input {
+		font-size: 3.25vw;
+	}
+}
+
 header .prikey .form >input[readonly] {
 	background-color:#ccc;
 	color:#666;
