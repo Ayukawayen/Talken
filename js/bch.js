@@ -50,7 +50,7 @@ async function listTalkens(skip) {
 }
 
 
-async function getGpUtxo(addr, isMinter) {
+async function getGpUtxos(addr, isMinter) {
 	let decoded = cashaddr.decode(addr);
 	addr = cashaddr.encode('simpleledger', decoded.type, decoded.hash);
 
@@ -82,22 +82,25 @@ async function getGpUtxo(addr, isMinter) {
 	if(!response.g) return false;
 	if(!response.g.length) return false;
 	
+	let result = [];
 	for(let i=0; i<response.g.length; ++i) {
-		let utxo = getGpUtxoFromGraph(response.g[i], addr, isMinter);
-
-		if(utxo) return utxo;
+		let utxos = getGpUtxosFromGraph(response.g[i], addr, isMinter);
+		if(!utxos) continue;
+		
+		result = result.concat(utxos);
 	}
 	
-	return false;
+	return result;
 }
 
-function getGpUtxoFromGraph(graph, addr, isMinter) {
+function getGpUtxosFromGraph(graph, addr, isMinter) {
 	if(!graph.graphTxn) return false;
 	if(!graph.graphTxn.outputs) return false;
 	if(!graph.graphTxn.outputs.length) return false;
 	
 	let utxos = graph.graphTxn.outputs;
 
+	let result = [];
 	for(let i=0; i<utxos.length; ++i) {
 		let utxo = utxos[i];
 
@@ -109,14 +112,14 @@ function getGpUtxoFromGraph(graph, addr, isMinter) {
 			if(utxo.slpAmount != 1) continue;
 		}
 		
-		return {
+		result.push({
 			txId: graph.graphTxn.txid,
 			txPos: utxo.vout,
 			value: utxo.bchSatoshis,
-		};
+		});
 	}
 	
-	return false;
+	return result;
 }
 
 async function getFeeUtxo(addr, minValue) {
@@ -145,66 +148,23 @@ async function getFeeUtxo(addr, minValue) {
 	return false;
 }
 
+
+async function getTokenOwner(tokenId) {
+	let url = `https://api.fullstack.cash/v4/slp/balancesForToken/${tokenId}`;
+
+	let response = await httpFetch(url);
+
+	if(!response) return false;
+	if(response.length <= 0) return false;
+	
+	return response[0].slpAddress || false;
+}
+
 async function sendRawTx(txHex) {
 	let url = `https://api.fullstack.cash/v4/rawtransactions/sendRawTransaction/${txHex}`;
 
 	let response = await httpFetch(url);
 }
-
-
-async function getGpBalance(addr) {
-	let decoded = cashaddr.decode(addr);
-	addr = cashaddr.encode('simpleledger', decoded.type, decoded.hash);
-
-	let query = {
-		"v": 3,
-		"q": {
-			"db": ["g"],
-			"aggregate": [{
-				"$match": {
-					"graphTxn.details.tokenIdHex": GroupTokenId,
-					"graphTxn.outputs": {
-						"$elemMatch": {
-							"address": addr,
-							"status": "UNSPENT",
-							"slpAmount": { "$gt": 0 }
-						}
-					}
-				}
-			}]
-		}
-	};
-	query = btoa(JSON.stringify(query));
-
-	let url = `https://slpdb.fountainhead.cash/q/${query}`;
-
-	let response = await httpFetch(url);
-	
-	if(!response) return false;
-	if(!response.g) return false;
-	
-	let result = 0;
-	for(let i=0; i<response.g.length; ++i) {
-		let graph = response.g[i];
-
-		if(!graph.graphTxn) return false;
-		if(!graph.graphTxn.outputs) return false;
-		if(!graph.graphTxn.outputs.length) return false;
-		
-		let utxos = graph.graphTxn.outputs;
-
-		for(let i=0; i<utxos.length; ++i) {
-			let utxo = utxos[i];
-
-			if(utxo.address != addr) continue;
-			if(utxo.status != 'UNSPENT') continue;
-			
-			result += parseInt(utxo.slpAmount);
-		}
-	}
-	return result;
-}
-
 
 function httpFetch(url, notParse) {
 	return new Promise((resolve, reject) => {

@@ -150,3 +150,22 @@ header .prikey .form >input[readonly] {
 	background-color: #333;
 	color: #ccc;
 }
+
+.talkens .talken .tip {
+	text-align:right;
+	margin: 0.5rem -0.5rem -0.5rem 0.5rem;
+}
+
+.talkens .talken .tip >span {
+    display: inline-block;
+    font-size: 0.75rem;
+	padding: 0.25rem;
+    border-radius: 0.5rem;
+	
+	cursor: default;
+}
+
+.talkens .talken .tip >span:hover {
+    background: #444;
+    color: #fff;
+}

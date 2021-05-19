@@ -16,6 +16,7 @@ let g = {
 	talkens:[],
 	talkenIdExists:{},
 };
+let gpUtxos = null;
 
 jsbtc.asyncInit().then(()=>{
 	loadLocalAccount();
@@ -57,7 +58,7 @@ async function requestGp() {
 		prompt(`Something Error!\nSend at least 0.0003 BCH to your deposit address`, g.account.deposit.addr);
 		return;
 	}
-	let gpUtxo = await getGpUtxo(MinterAddr, true);
+	let gpUtxo = await getGpUtxos(MinterAddr, true);
 	if(!gpUtxo) {
 		alert('Something Error!');
 		return;
@@ -79,12 +80,14 @@ async function postTalken(text) {
 		prompt(`Something Error!\nSend at least 0.00002 BCH to your deposit address`, g.account.deposit.addr);
 		return;
 	}
-	let gpUtxo = await getGpUtxo(g.account.genesiser.addr);
-	if(!gpUtxo) {
+	
+	if(!gpUtxos || gpUtxos.length<=0) {
 		alert('Something Error!');
 		loadBalance();
 		return;
 	}
+	let gpUtxo = gpUtxos.shift();
+	g.account.genesiser.gpBalance = gpUtxos.length;
 	
 	let msg = {
 		userPubkey: g.account.user.pubkey,
@@ -146,8 +149,10 @@ function loadAccount() {
 function loadBalance() {
 	//g.account.deposit.balance = 'Loading';
 	g.account.genesiser.gpBalance = 'Loading';
-	getGpBalance(g.account.genesiser.addr).then((response)=>{
-		g.account.genesiser.gpBalance = response;
+	
+	getGpUtxos(g.account.genesiser.addr).then((response)=>{
+		gpUtxos = response;
+		g.account.genesiser.gpBalance = gpUtxos.length;
 	});
 }
 
